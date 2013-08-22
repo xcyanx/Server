@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2013/04/12 00:48:05.000.665,=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>2013/04/12 01:20:39.000.204,=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>2013/07/30 22:29:06.000.470,=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>2013/07/30 22:29:30.000.905,C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Unit1.dfm=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Server\Server.dfm</Transaction>
+    <Transaction>2013/07/30 22:29:30.000.905,C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Unit1.h=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Server\Server.h</Transaction>
+    <Transaction>2013/07/30 22:29:30.000.905,C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Unit1.cpp=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Server\Server.cpp</Transaction>
+    <Transaction>2013/07/30 22:29:38.000.314,C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Project1.cbproj=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Server\ServerProject.cbproj</Transaction>
+    <Transaction>2013/07/30 22:31:07.000.644,=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Server\File1.h</Transaction>
+    <Transaction>2013/07/30 22:31:39.000.410,C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Server\File1.h=C:\Users\Σταμάτης\Documents\RAD Studio\Projects\Server\Packet.h</Transaction>
+  </Transactions>
+</BorlandProject>
