@@ -5,7 +5,7 @@
 #pragma hdrstop
 
 #include "Server.h"
-#include <RegularExpressions.hpp>
+#include <boost/regex.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -32,6 +32,8 @@ void __fastcall TForm1::ServerClientAccept(TObject *Sender, TCustomIpClient *Cli
 	if(ClientSocket->WaitForData(5000) == false)
 	{
 		Memo1->Lines->Add("Error: Client socket could no accept data.");
+
+		return;
 	}
 	else
 	{
@@ -46,8 +48,6 @@ void __fastcall TForm1::ServerClientAccept(TObject *Sender, TCustomIpClient *Cli
 
 			 SQLQuery->SQLConnection = SQLConnection;
 
-			 //LogInPacket *logPack = static_cast<LogInPacket*>(&bp);
-
 			//Decrypt the data.
 
 
@@ -60,7 +60,7 @@ void __fastcall TForm1::ServerClientAccept(TObject *Sender, TCustomIpClient *Cli
 				SQLQuery->SQL->Clear();
 				SQLQuery->Close();
 
-                SQLQuery->SQL->Add("SELECT * FROM Users WHERE Username = :uname and Password = :upass;");
+				SQLQuery->SQL->Add("SELECT * FROM Users WHERE Username = :uname and Password = :upass;");
 
 				SQLQuery->Prepared = true;
 
@@ -75,7 +75,7 @@ void __fastcall TForm1::ServerClientAccept(TObject *Sender, TCustomIpClient *Cli
 			}
 			catch(TDBXError &e)
 			{
-			  	Memo1->Lines->Add("SQL Exception: "+e.Message);
+				Memo1->Lines->Add("SQL Exception: "+e.Message);
 			}
 
 			//Finally send the ACC_VERIFIED or -1.
@@ -85,6 +85,8 @@ void __fastcall TForm1::ServerClientAccept(TObject *Sender, TCustomIpClient *Cli
 			if(SQLResult == 1)
 			{
 				bp.PacketID = BasicPacket::ACC_VERIFIED;
+
+				std::string toSend = std::string(ClientSocket->RemoteHost.c_str())+std::string(" ")+std::string(lp.username);
 
 				/*if(CoCreateGuid(&guid) != S_OK)
 				{
@@ -108,6 +110,14 @@ void __fastcall TForm1::ServerClientAccept(TObject *Sender, TCustomIpClient *Cli
 
 				Memo1->Lines->Add(String("Sent guid ")+System::Sysutils::GUIDToString(guid)+String(" to ")+ClientSocket->RemoteHost);*/
 
+				ServerServer->Active = true;
+				ServerServer->Open();
+
+				ServerServer->Sendln(toSend.c_str());
+
+				ServerServer->Close();
+				ServerServer->Active = false;
+
 				Memo1->Lines->Add("IP "+ClientSocket->RemoteHost+" logged in with username "+String(lp.username));
 			}
 			else
@@ -120,7 +130,54 @@ void __fastcall TForm1::ServerClientAccept(TObject *Sender, TCustomIpClient *Cli
 	}  //Verification
 	else if(lp.PacketID == BasicPacket::ACC_CREATE)
 	{
-		bp.PacketID = BasicPacket::ACC_NOTAVAILABLE;
+    	SQLQuery = new TSQLQuery(NULL);
+
+		SQLQuery->SQLConnection = SQLConnection;
+
+		AnsiString uname, pass;
+
+		try
+		{
+			SQLQuery->SQL->Clear();
+			SQLQuery->Close();
+
+			SQLQuery->SQL->Add("INSERT INTO Users(Username, Password) VALUES(:uname, :upass);");
+
+			SQLQuery->Prepared = true;
+
+			uname = TrimLeft(TrimRight(lp.username));
+			pass = TrimLeft(TrimRight(lp.password));
+
+			if(uname == "" || pass == "")
+			{
+				Memo1->Lines->Add("IP "+ClientSocket->RemoteHost+" sent empty data");
+
+                bp.PacketID = BasicPacket::ERR;
+
+                ClientSocket->SendBuf(&bp, sizeof(bp));
+
+				return;
+            }
+
+			SQLQuery->ParamByName("uname")->AsAnsiString = uname;
+			SQLQuery->ParamByName("upass")->AsAnsiString = pass;
+
+			SQLQuery->ExecSQL(false);
+
+			SQLResult = SQLQuery->RowsAffected;
+
+			if(SQLResult == 1)
+				bp.PacketID = BasicPacket::ACC_CREATED;
+		}
+		catch(TDBXError &e)
+		{
+			Memo1->Lines->Add("SQL Exception: "+e.Message);
+
+			if(e.ErrorCode == 1)
+				bp.PacketID = BasicPacket::ACC_NOTAVAILABLE;
+		}
+
+		//bp.PacketID = BasicPacket::ACC_NOTAVAILABLE;
 
 		ClientSocket->SendBuf(&bp, sizeof(bp));
     }
@@ -133,14 +190,13 @@ void __fastcall TForm1::ServerClientAccept(TObject *Sender, TCustomIpClient *Cli
 
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
-
 	Memo1->Lines->Add("Initiating Server.");
 
 	Memo1->Lines->Add("Loading the options file.");
 
 	LoadXML();
 
-	//Memo1->Lines->Add("Initiating the socket for the Server to Server communication.");
+	Memo1->Lines->Add("Initiating the socket for the Server to Server communication.");
 
 	//ServerServer->Active = true;
 
@@ -166,8 +222,8 @@ void _fastcall TForm1::LoadXML()
 
 	_di_IXMLNodeList root = XML->ChildNodes->GetNode("Options")->GetChildNodes();
 
-	//ServerServer->LocalHost = root->GetNode("ServerToServer")->GetChildNodes()->GetNode("Host")->Text;
-	//ServerServer->LocalPort = StrToInt(root->GetNode("ServerToServer")->GetChildNodes()->GetNode("Port")->Text);
+	ServerServer->LocalHost = root->GetNode("ServerToServer")->GetChildNodes()->GetNode("Host")->Text;
+	ServerServer->LocalPort = StrToInt(root->GetNode("ServerToServer")->GetChildNodes()->GetNode("Port")->Text);
 
 	ServerClient->LocalHost = root->GetNode("ServerToClient")->GetChildNodes()->GetNode("Host")->Text;
 	ServerClient->LocalPort = StrToInt(root->GetNode("ServerToClient")->GetChildNodes()->GetNode("Port")->Text);
@@ -182,6 +238,7 @@ void _fastcall TForm1::LoadXML()
 
 }
 //---------------------------------------------------------------------------
+
 
 
 
