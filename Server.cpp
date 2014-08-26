@@ -213,7 +213,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 	Memo1->Lines->Add("");
 }
 
-void _fastcall TForm1::LoadXML()
+void __fastcall TForm1::LoadXML()
 {
 	String path = ExtractFilePath(Application->ExeName);
 
@@ -238,9 +238,5 @@ void _fastcall TForm1::LoadXML()
 
 }
 //---------------------------------------------------------------------------
-
-
-
-
 
 

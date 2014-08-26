@@ -34,6 +34,12 @@
 			<CfgParent>Base</CfgParent>
 			<Base>true</Base>
 		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+			<Cfg_2_Win32>true</Cfg_2_Win32>
+			<CfgParent>Cfg_2</CfgParent>
+			<Cfg_2>true</Cfg_2>
+			<Base>true</Base>
+		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<_TCHARMapping>wchar_t</_TCHARMapping>
 			<ProjectType>CppVCLApplication</ProjectType>
@@ -83,11 +89,19 @@
 			<ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-			<LinkPackageImports>rtl.bpi;vcl.bpi;inet.bpi;xmlrtl.bpi;dbrtl.bpi;dbexpress.bpi;DbxCommonDriver.bpi;dsnap.bpi;DBXMySQLDriver.bpi</LinkPackageImports>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<UsePackages>false</UsePackages>
+			<UsingDelphiRTL>false</UsingDelphiRTL>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<DynamicRTL>false</DynamicRTL>
+			<LinkPackageStatics>rtl.lib;vcl.lib;inet.lib;xmlrtl.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;dsnap.lib;DBXMySQLDriver.lib</LinkPackageStatics>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
 			<Defines>NDEBUG;$(Defines)</Defines>
 			<TASM_Debugging>None</TASM_Debugging>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<LinkPackageImports>rtl.bpi;vcl.bpi;inet.bpi;xmlrtl.bpi;dbrtl.bpi;dbexpress.bpi;DbxCommonDriver.bpi;dsnap.bpi;DBXMySQLDriver.bpi</LinkPackageImports>
 		</PropertyGroup>
 		<ItemGroup>
 			<None Include="Packet.h">

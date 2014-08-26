@@ -19,6 +19,7 @@ object Form1: TForm1
     Top = 8
     Width = 631
     Height = 257
+    ScrollBars = ssVertical
     TabOrder = 0
   end
   object ServerClient: TTcpServer

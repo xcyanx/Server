@@ -31,7 +31,7 @@ __published:	// IDE-managed Components
 
 
 private:	// User declarations
-	void _fastcall LoadXML();
+	void __fastcall LoadXML();
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
 };
